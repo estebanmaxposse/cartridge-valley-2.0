@@ -1,0 +1,55 @@
+[
+	{
+		"title": "mario",
+		"price": 60,
+		"description": "asnjdka",
+		"code": "sndkla",
+		"thumbnail": "dsada",
+		"stock": 5,
+		"timestamp": "10/13/2022, 5:40:19 PM",
+		"id": 1
+	},
+	{
+		"title": "smash",
+		"price": 60,
+		"description": "asnjdka",
+		"code": "sndkla",
+		"thumbnail": "dsada",
+		"stock": 5,
+		"timestamp": "10/13/2022, 5:43:02 PM",
+		"url": "/api/products/undefined",
+		"id": 2
+	},
+	{
+		"title": "smash",
+		"price": 60,
+		"description": "asnjdka",
+		"code": "sndkla",
+		"thumbnail": "dsada",
+		"stock": 5,
+		"timestamp": "10/13/2022, 5:43:29 PM",
+		"url": "/api/products/undefined",
+		"id": 3
+	},
+	{
+		"title": "smash",
+		"price": 60,
+		"description": "asnjdka",
+		"code": "sndkla",
+		"thumbnail": "dsada",
+		"stock": 5,
+		"timestamp": "10/13/2022, 5:44:20 PM",
+		"url": "/api/products/undefined",
+		"id": 4
+	},
+	{
+		"title": "smash",
+		"price": 60,
+		"description": "asnjdka",
+		"code": "sndkla",
+		"thumbnail": "dsada",
+		"stock": 5,
+		"timestamp": "10/13/2022, 5:47:36 PM",
+		"id": 5
+	}
+]
