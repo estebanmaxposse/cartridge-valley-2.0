@@ -23,7 +23,12 @@
     "url": "https://github.com/estebanmaxposse/cartridge-valley-2.0/issues"
   },
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "firebase": "^9.13.0",
+    "firebase-admin": "^11.2.0",
+    "mongoose": "^6.7.0",
+    "node-fetch": "^3.2.10",
     "nodemon": "^2.0.20"
   }
 }

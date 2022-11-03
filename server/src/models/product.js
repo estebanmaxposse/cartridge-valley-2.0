@@ -1,5 +1,5 @@
 class Product {
-    constructor(title, description, code, thumbnail, price, stock) {
+    constructor(title, description, code, thumbnail, price, stock, category) {
 
         this.timestamp = new Date().toLocaleString()
         this.title = title || ""
@@ -8,6 +8,7 @@ class Product {
         this.thumbnail = thumbnail || ""
         this.price = price || ""
         this.stock = stock || ""
+        this.category = category || ""
     }
 }
 

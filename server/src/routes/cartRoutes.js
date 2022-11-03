@@ -1,16 +1,13 @@
 const { Router } = require("express");
 const Cart = require("../models/cart");
-const fileManager = require("../utils/fileManager");
 const router = Router();
-
-const newFileManager = new fileManager('cart.json');
-
-const newProductManager = new fileManager('products.json');
+const productManager = require('../daos/daoProducts');
+const cartManager = require('../daos/daoCarts');
 
 router.post("/api/cart", async (req, res) => {
     try {
         let newCart = new Cart()
-        res.json(newFileManager.save(newCart))
+        res.json(await cartManager.save(newCart))
     } catch {
         throw new Error(error);
     };
@@ -18,39 +15,40 @@ router.post("/api/cart", async (req, res) => {
 
 router.post("/api/cart/:id/products", async (req, res) => {
     let { id } = req.params;
-    let cart = await newFileManager.getById(id);
-    let body = req.body.productId;
+    let cart = await cartManager.getById(id);
+    let body = req.body;
 
     await Promise
-        .all(body.map(pId => newProductManager.getById(pId)))
+        .all(body.map(pId => productManager.getById(pId._id ?? pId.id)))
         .then(products => cart.products.push(...products));
 
-    let updatedCart = await newFileManager.updateItem(cart);
-    res.json(updatedCart);
+    let updatedCart = await cartManager.updateItem(cart);
+    res.json(updatedCart.response);
 });
 
 router.get("/api/cart/:id/products", async (req, res) => {
     let { id } = req.params;
-    let cart = await newFileManager.getById(id);
+    let cart = await cartManager.getById(id);
     if (cart.products.length === 0) {
         res.json({ error: "This cart has no products" })
     } else {
-        res.json({cartId: cart.id, products: cart.products})
+        res.json({cartId: cart._id ?? cart.id, products: cart.products})
     };
 });
 
 router.delete("/api/cart/:id", async (req, res) => {
     let { id } = req.params;
-    res.json( await newFileManager.deleteById(id) );
+    res.json( await cartManager.deleteById(id) );
 })
 
 router.delete("/api/cart/:id/products/:id_prod", async (req, res) => {
     let { id, id_prod } = req.params;
-    let cart = await newFileManager.getById(id);
-    let newProducts = cart.products.filter((product) => product.id !== Number(id_prod));
+    let cart = await cartManager.getById(id);
+    let newProducts = cart.products.filter((product) => (product._id ?? product.id).toString() !== id_prod);
     cart.products = newProducts;
-    let updatedCart = await newFileManager.updateItem(cart);
-    res.json(updatedCart);
+
+    let updatedCart = await cartManager.updateItem(cart);
+    res.json(updatedCart.response);
 })
 
 module.exports = router;

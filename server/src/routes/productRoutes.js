@@ -1,21 +1,17 @@
 const { Router } = require("express");
+const router = Router();
 const { productValidation } = require("../controllers/services");
 const Product = require("../models/product")
-const fileManager = require("../utils/fileManager")
-const router = Router();
-const fs = require("fs");
+const productManager = require('../daos/daoProducts');
+const cartManager = require('../daos/daoCarts');
 
-const newFileManager = new fileManager(`products.json`);
-
-const newCartManager = new fileManager('cart.json');
-
-const admin = false;
+const admin = true;
 
 const checkAdmin = () => admin;
 
 router.get("/", async (req, res) => {
     try {
-        const products = await newFileManager.getAll();
+        const products = await productManager.getAll();
         res.json(products);
     } catch (error) {
         throw new Error(error);
@@ -24,7 +20,7 @@ router.get("/", async (req, res) => {
 
 router.get("/api/products", async (req, res) => {
     try {
-        const products = await newFileManager.getAll();
+        const products = await productManager.getAll();
         const productExists = products.length !== 0;
         if (productExists) {
             res.json(products);
@@ -39,7 +35,7 @@ router.get("/api/products", async (req, res) => {
 router.get("/api/products/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await newFileManager.getById(id);
+        const product = await productManager.getById(id);
         let productExists = true;
         if (!product) {
             productExists = false;
@@ -59,14 +55,14 @@ router.post("/api/products", async (req, res) => {
         return res.json({response: "You can not access this page"});
     }
     try {
-        const { title, price, description, code, thumbnail, stock } = req.body;
-        const newProduct = new Product(title, description, code, thumbnail, price, stock);
-        const validatedProduct = productValidation(newProduct.title, newProduct.price, newProduct.description, newProduct.code, newProduct.thumbnail, newProduct.stock, newProduct.timestamp);
+        const { title, price, description, code, thumbnail, stock, category } = req.body;
+        const newProduct = new Product(title, description, code, thumbnail, price, stock, category);
+        const validatedProduct = productValidation(newProduct.title, newProduct.price, newProduct.description, newProduct.code, newProduct.thumbnail, newProduct.stock, newProduct.timestamp, newProduct.category);
         if (validatedProduct.error) {
             res.json(validatedProduct);
         } else {
             res.json(validatedProduct)
-            const product = await newFileManager.save(validatedProduct);
+            const product = await productManager.save(validatedProduct);
         }
     } catch (error) {
         throw new Error(error);
@@ -79,8 +75,9 @@ router.put("/api/products/:id", async (req, res) => {
     }
     try {
         let { id } = req.params;
-        let updatedProduct = {...req.body, id: parseInt(id)};
-        res.json(newFileManager.updateItem(updatedProduct));
+        let updatedProduct = {...req.body, id: id};
+        await productManager.updateItem(updatedProduct);
+        res.json(updatedProduct);
     } catch (error) {
         throw new Error(error);
     };
@@ -92,17 +89,19 @@ router.delete("/api/products/:id", async (req, res) => {
     }
     try {
         const { id } = req.params;
-        res.json(await newFileManager.deleteById(id));
-        let allCarts = await newCartManager.getAll();
-        const isMatching = product => product.id === Number(id);
-        let filteredCart = allCarts.filter(cart => cart.products.find(isMatching)).map((_, i) => i);
+        res.json(await productManager.deleteById(id));
 
-        filteredCart.forEach(i => {
-            allCarts[i].products = allCarts[i].products.filter(product => product.id !== Number(id));
-        });
+        //Cart DAOS?
+        // let allCarts = await cartManager.getAll();
+        // const isMatching = product => product.id === Number(id);
+        // let filteredCart = allCarts.filter(cart => cart.products.find(isMatching)).map((_, i) => i);
 
-        console.log(allCarts);
-        fs.promises.writeFile(newCartManager.name, JSON.stringify(allCarts, null, '\t'))
+        // filteredCart.forEach(i => {
+        //     allCarts[i].products = allCarts[i].products.filter(product => product.id !== Number(id));
+        // });
+
+        // console.log(allCarts);
+        // fs.promises.writeFile(cartManager.name, JSON.stringify(allCarts, null, '\t'))
     } catch (error) {
         throw new Error(error);
     };

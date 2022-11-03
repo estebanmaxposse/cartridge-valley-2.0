@@ -16,7 +16,6 @@ class File {
   };
   
   async getAll() {
-    console.log("get all", this.content);
     return this.content;
   };
 

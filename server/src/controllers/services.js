@@ -1,8 +1,8 @@
-const productValidation = (title, price, description, code, thumbnail, stock, timestamp) => {
-    if (!title || !price || !description || !code || !thumbnail || !stock || !timestamp) {
+const productValidation = (title, price, description, code, thumbnail, stock, timestamp, category) => {
+    if (!title || !price || !description || !code || !thumbnail || !stock || !timestamp || !category) {
         return { error: 'Please fill out every field'}
     } else {
-        return { title, price, description, code, thumbnail, stock, timestamp };
+        return { title, price, description, code, thumbnail, stock, timestamp, category };
     };
 };
 
