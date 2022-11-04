@@ -18,7 +18,8 @@ class ContainerFirebase {
 
     async save(object) {
         try {
-            const savedObject = await addDoc(collection(db, this.collectionName), object )
+            console.log({...object});
+            const savedObject = await addDoc(collection(db, this.collectionName), {...object} )
             return ({ response: 'Saved', savedObject })
         } catch (error) {
             console.log(error);

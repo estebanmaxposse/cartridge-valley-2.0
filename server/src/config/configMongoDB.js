@@ -19,7 +19,6 @@ class MongoClient {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
             });
-            console.log("connected to Mongodb");
         } catch (error) {
             console.log(error);
         }
@@ -35,7 +34,6 @@ const settingDb = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log("connected to db");
 
         //Create db from json
         await productJSON.forEach((elem) => {

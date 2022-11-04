@@ -7,6 +7,7 @@ const cartManager = require('../daos/daoCarts');
 router.post("/api/cart", async (req, res) => {
     try {
         let newCart = new Cart()
+        console.log(typeof newCart);
         res.json(await cartManager.save(newCart))
     } catch {
         throw new Error(error);
@@ -30,7 +31,7 @@ router.get("/api/cart/:id/products", async (req, res) => {
     let { id } = req.params;
     let cart = await cartManager.getById(id);
     if (cart.products.length === 0) {
-        res.json({ error: "This cart has no products" })
+        res.json({ response: "This cart has no products" })
     } else {
         res.json({cartId: cart._id ?? cart.id, products: cart.products})
     };

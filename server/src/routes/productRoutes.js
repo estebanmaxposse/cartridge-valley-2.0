@@ -92,13 +92,17 @@ router.delete("/api/products/:id", async (req, res) => {
         res.json(await productManager.deleteById(id));
 
         //Cart DAOS?
-        // let allCarts = await cartManager.getAll();
-        // const isMatching = product => product.id === Number(id);
-        // let filteredCart = allCarts.filter(cart => cart.products.find(isMatching)).map((_, i) => i);
+        let allCarts = await cartManager.getAll();
+        console.log(allCarts);
+        const isMatching = product => (product._id ?? product.id).toString() === id;
+        let filteredCart = allCarts.filter(cart => cart.products.find(isMatching)).map((_, i) => i);
+        console.log(filteredCart);
 
-        // filteredCart.forEach(i => {
-        //     allCarts[i].products = allCarts[i].products.filter(product => product.id !== Number(id));
-        // });
+        filteredCart.forEach(i => {
+            allCarts[i].products = allCarts[i].products.filter(product => (product._id ?? product.id).toString() !== id);
+        });
+
+        console.log(allCarts);
 
         // console.log(allCarts);
         // fs.promises.writeFile(cartManager.name, JSON.stringify(allCarts, null, '\t'))
