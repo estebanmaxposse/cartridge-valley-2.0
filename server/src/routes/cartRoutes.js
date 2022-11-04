@@ -18,10 +18,13 @@ router.post("/api/cart/:id/products", async (req, res) => {
     let { id } = req.params;
     let cart = await cartManager.getById(id);
     let body = req.body;
-
     await Promise
-        .all(body.map(pId => productManager.getById(pId._id ?? pId.id)))
-        .then(products => cart.products.push(...products));
+        .all(body.map(pId => {
+            console.log("pId", pId._id);
+            return productManager.getById(pId._id ?? pId.id)}))
+        .then(products => {
+            console.log(products);
+            cart.products.push(...products)});
 
     let updatedCart = await cartManager.updateItem(cart);
     res.json(updatedCart.response);

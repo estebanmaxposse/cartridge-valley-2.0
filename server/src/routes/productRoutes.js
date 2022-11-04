@@ -104,6 +104,8 @@ router.delete("/api/products/:id", async (req, res) => {
 
         console.log(allCarts);
 
+
+
         // console.log(allCarts);
         // fs.promises.writeFile(cartManager.name, JSON.stringify(allCarts, null, '\t'))
     } catch (error) {

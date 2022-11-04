@@ -38,6 +38,7 @@ class ContainerMongoDB {
   async getById(id) {
     try {
       let foundElement = await this.content.findOne({'_id': id});
+      console.log("getById",foundElement);
       return foundElement;
     } catch (error) {
       throw new Error(`Couldn't find ${id} object! ${error}`);
