@@ -14,7 +14,7 @@ switch (selectedDB) {
         productManager = new daoProductsFirebase()
         break;
     default:
-        productManager = new daoProductsFile('cart.json')
+        productManager = new daoProductsFile('products.json')
         break;
 }
 

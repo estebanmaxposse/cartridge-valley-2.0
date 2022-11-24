@@ -18,9 +18,12 @@ class ContainerFirebase {
 
     async save(object) {
         try {
-            console.log({...object});
             const savedObject = await addDoc(collection(db, this.collectionName), {...object} )
-            return ({ response: 'Saved', savedObject })
+            const saveRef = doc(db, this.collectionName, savedObject.id)
+            const objectWithId = await updateDoc(saveRef, {
+                'id': savedObject.id
+            })
+            return savedObject.id
         } catch (error) {
             console.log(error);
             throw new Error(`Failed to add object!`)
@@ -34,7 +37,7 @@ class ContainerFirebase {
                 const element = {id: foundElement.id, ...foundElement.data()}
                 return element;
             } else {
-                return ({ response: `Product ${id} doesn't exist!` })
+                return ({ response: `Item ${id} doesn't exist!` })
             }
         } catch (error) {
             throw new Error(`Couldn't find ${id} object! ${error}`);
@@ -45,7 +48,7 @@ class ContainerFirebase {
         try {
             const toUpdate = await doc(db, this.collectionName, item.id)
             const updatedItem = await updateDoc(toUpdate, item)
-            return { response: `${updatedItem} updated!` };
+            return { response: `Item ${item.id} updated!` };
         } catch (error) {
             console.log(error);
             return { response: Error`updating ${item}`, error };
@@ -70,5 +73,6 @@ class ContainerFirebase {
         };
     };
 }
+
 
 module.exports = ContainerFirebase

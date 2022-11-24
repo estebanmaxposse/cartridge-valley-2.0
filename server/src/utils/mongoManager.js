@@ -3,7 +3,7 @@ const MongoClient = require('../config/configMongoDB');
 const productSchema = require('../models/schemas/productSchema');
 const cartSchema = require('../models/schemas/cartSchema')
 
-const client = new MongoClient('mongodb://localhost:27017/ecommerce');
+const client = new MongoClient('mongodb+srv://estebanmaxposse:GetStuff8@ecommerce.qwzmjs0.mongodb.net/?retryWrites=true&w=majority');
 client.connectDb()
 
 class ContainerMongoDB {
@@ -26,9 +26,10 @@ class ContainerMongoDB {
 
   async save(object) {
     try {
+      console.log('saving');
       const saveObjectModel = new this.content(object);
       let savedObject = await saveObjectModel.save();
-      return ({ response: 'Saved', savedObject })
+      return savedObject
     } catch (error) {
       console.log(error);
       throw new Error(`Failed to add object!`)
@@ -41,7 +42,7 @@ class ContainerMongoDB {
       console.log("getById",foundElement);
       return foundElement;
     } catch (error) {
-      throw new Error(`Couldn't find ${id} object! ${error}`);
+      return ({ response: `Item ${id} doesn't exist!` })
     };
   };
 

@@ -12,18 +12,9 @@ const checkAdmin = () => admin;
 router.get("/", async (req, res) => {
     try {
         const products = await productManager.getAll();
-        res.json(products);
-    } catch (error) {
-        throw new Error(error);
-    };
-});
-
-router.get("/api/products", async (req, res) => {
-    try {
-        const products = await productManager.getAll();
         const productExists = products.length !== 0;
         if (productExists) {
-            res.json(products);
+            res.status(200).json(products);
         } else {
             res.json({ error: "Couldn't find any products!" })
         }
@@ -32,7 +23,7 @@ router.get("/api/products", async (req, res) => {
     };
 });
 
-router.get("/api/products/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const product = await productManager.getById(id);
@@ -41,7 +32,7 @@ router.get("/api/products/:id", async (req, res) => {
             productExists = false;
         };
         if (productExists) {
-            res.json(product);
+            res.status(200).json(product);
         } else {
             res.json({ error: "Couldn't find the specified product!" })
         }
@@ -50,7 +41,7 @@ router.get("/api/products/:id", async (req, res) => {
     };
 });
 
-router.post("/api/products", async (req, res) => {
+router.post("/", async (req, res) => {
     if (!checkAdmin()) {
         return res.json({response: "You can not access this page"});
     }
@@ -61,15 +52,15 @@ router.post("/api/products", async (req, res) => {
         if (validatedProduct.error) {
             res.json(validatedProduct);
         } else {
-            res.json(validatedProduct)
             const product = await productManager.save(validatedProduct);
+            res.status(200).json({response: `Product ${product} has been added!`})
         }
     } catch (error) {
         throw new Error(error);
     };
 });
 
-router.put("/api/products/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
     if (!checkAdmin()) {
         return res.json({response: "You can not access this page"});
     }
@@ -77,34 +68,43 @@ router.put("/api/products/:id", async (req, res) => {
         let { id } = req.params;
         let updatedProduct = {...req.body, id: id};
         await productManager.updateItem(updatedProduct);
-        res.json(updatedProduct);
+        res.status(200).json(updatedProduct);
     } catch (error) {
         throw new Error(error);
     };
 });
 
-router.delete("/api/products/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     if (!checkAdmin()) {
         return res.json({response: "You can not access this page"});
     }
     try {
         const { id } = req.params;
-        res.json(await productManager.deleteById(id));
+        res.status(200).json(await productManager.deleteById(id));
 
         //Cart DAOS?
         let allCarts = await cartManager.getAll();
-        console.log(allCarts);
+        console.log(JSON.stringify(allCarts));
         const isMatching = product => (product._id ?? product.id).toString() === id;
-        let filteredCart = allCarts.filter(cart => cart.products.find(isMatching)).map((_, i) => i);
-        console.log(filteredCart);
+        let filteredCart = allCarts.filter(cart => cart.products.find(isMatching));
+        console.log('Filtered Cart Index ', filteredCart);
 
-        filteredCart.forEach(i => {
-            allCarts[i].products = allCarts[i].products.filter(product => (product._id ?? product.id).toString() !== id);
-        });
+        filteredCart.forEach(c => {
+            const cart = c;
+            cart.products = c.products.filter(p => !isMatching(p))
+            cartManager.updateItem(cart).then(() => console.log('yay :D'))
+        })
 
-        console.log(allCarts);
+        /*filteredCart.forEach(async (i) => {
+            console.log('pre', allCarts[i].products.length)
+            allCarts[i].products = allCarts[i].products.filter(p => !isMatching(p));
+            await cartManager.updateItem(filteredCart)
+            console.log('\tpost', allCarts[i].products.length)
+        });*/
 
+        console.log('All carts after deletion ', JSON.stringify(allCarts));
 
+        await cartManager.updateItem()
 
         // console.log(allCarts);
         // fs.promises.writeFile(cartManager.name, JSON.stringify(allCarts, null, '\t'))
